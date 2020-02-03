@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Modules</li><li class="nav-heading"><span class="nav-item-type type-module">M</span><span class="nav-item-name"><a href="module-Marathon.html">Marathon</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-Marathon.html#combineRoot">combineRoot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-Marathon.html#combineRunners">combineRunners</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-Marathon.html#createRunner">createRunner</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="module-Marathon.html#createScopedRunner">createScopedRunner</a></span></li>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1 align="center">
+  <span>Marathon</span>
+  <span style="display:inline-block;transform:scaleX(-1)">🏃‍♀️</span>
+</h1>
+<p>
+  <img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue.svg?cacheSeconds=2592000" />
+  <a href="/" target="_blank">
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+  </a>
+  <a href="LICENSE.md" target="_blank">
+    <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+  </a>
+  <a href="https://twitter.com/mashvp" target="_blank">
+    <img alt="Twitter: mashvp" src="https://img.shields.io/twitter/follow/mashvp.svg?style=social" />
+  </a>
+</p>
+<blockquote>
+<p>Marathon runner system for vanilla JavaScript</p>
+</blockquote>
+<p>Marathon aims to simplify web JavaScript development thanks to separation of concern and a reducer-like single entry point. This eases the development of isolated, pure components (provided they are coded this way) and enables a basic, HTTP multi-page website to be turned into a single-page application with the use of libraries such as <a href="https://swup.js.org/">Swup</a>, <a href="https://barba.js.org/">Barba.js</a>, <a href="http://instantclick.io/">InstantClick</a>, <a href="https://github.com/turbolinks/turbolinks">Turbolinks</a> and others, with very minimal code change.</p>
+<h2>Install</h2>
+<pre class="prettyprint source lang-sh"><code>yarn install @mashvp/marathon
+</code></pre>
+<h2>Usage</h2>
+<p>A Marathon application is composed of one or several <em>runners</em>, which are isolated units of code that should handle a single feature of your application.</p>
+<p>Runners are pure functions, which must return an object containing a <code>register</code> and <code>unregister</code> function.
+These functions are used in place of a constructor and destructor, in order to enable and disable the runner's features as required.
+Runners should not depend on each-other, and should handle an isolated state. You can implement message passing between runners using a library such as <a href="https://sahadar.github.io/pubsub/">PubSub</a>. Generally speaking, runners should never be tightly coupled.</p>
+<p>Runners can be joined together into a root runner, forming a tree structured application.</p>
+<h3>Basic runner</h3>
+<p>A basic runner can be created with the <code>createRunner</code> function.</p>
+<pre class="prettyprint source lang-js"><code>import { createRunner } from '@mashvp/marathon';
+
+// Runners are allowed to use external libraries
+import SomeLibrary from 'some-library';
+
+export default createRunner('MyRunner', ({ /* globals here */ }, { /* Builtins here */ }) => {
+  const libraryInstance = new SomeLibrary();
+
+  const register = () => {
+    console.log('MyRunner was registered');
+    libraryInstance.run();
+  };
+
+  const unregister = () => {
+    console.log('MyRunner was unregistered');
+    libraryInstance.stop();
+  };
+
+  return { register, unregister };
+});
+</code></pre>
+<p>In the example above, the runner will log a message to the console when the application loads, and log another one when the application unloads.
+The runner also sets up an instance of an imaginary library, and starts and stops it when relevant.</p>
+<p>Please note that the <code>unregister</code> function is not required if it does not need to perform any action.</p>
+<h3>Combined runner</h3>
+<p>You can use a combined runner to join together runners which handle similar features to simplify your application structure. The <code>createCombinedRunner</code> returns a runner which forwards calls to <code>register</code> and <code>unregister</code> to its children.</p>
+<pre class="prettyprint source lang-js"><code>import { createCombinedRunner } from '@mashvp/marathon';
+
+import SomeRunner from './some-runner';
+import OtherRunner from './other-runner';
+
+export default createCombinedRunner(SomeRunner, OtherRunner);
+</code></pre>
+<h3>Scoped runners</h3>
+<p>Scoped runners are useful for implementing component-like features. For example, a modal system which could be found in multiple places in the website could be handled with a scoped runner. The <code>createScopedRunner</code> takes in a selector or list of elements along with the definition of the runner, creates a runner for each element, and returns of combined runner of them.</p>
+<pre class="prettyprint source lang-html"><code>&lt;button class=&quot;alert-button&quot; data-text=&quot;This is the alert text&quot;>Click me&lt;/button>
+&lt;button class=&quot;alert-button&quot; data-text=&quot;This is another alert&quot;>No, click me instead!&lt;/button>
+</code></pre>
+<pre class="prettyprint source lang-js"><code>import { createScopedRunner } from '@mashvp/marathon';
+
+const alertButton = createScopedRunner(
+  'AlertButton',
+  '.alert-button',
+  ({ scope }, { bind }) => {
+    const register = () => {
+      const text = scope.getAttribute('data-text');
+      // Use the `bind` builtin to add event listeners to elements.
+      // The listeners will be automatically unbound when the runner is unregistered.
+      bind(scope, 'click', () => {
+        alert(text);
+      });
+    };
+
+    return { register };
+  }
+);
+</code></pre>
+<h3>Root runner</h3>
+<p>The root runner can be thought of as your application itself. It works much like a combined runner, except that it returns a runner instance which is ready to be used as is. The <code>combineRoot</code> function takes in your application runners the same way <code>createCombinedRunner</code> does.</p>
+<p>You can then use the <code>register</code> function on your root runner to start the application, passing in any globals as required.</p>
+<pre class="prettyprint source lang-js"><code>import { combineRoot } from '@mashvp/marathon';
+import Bowser from 'bowser';
+
+import SomeRunner from './runners/some-runner';
+import OtherRunner from './runners/other-runner';
+import MobileRunners from './runners/mobile';
+
+(() => {
+  const browser = Bowser.getParser(window.navigator.userAgent);
+  const rootRunner = combineRoot(SomeRunner, OtherRunner, MobileRunners);
+
+  const init = () => {
+    // Start the root runner on DOMContentLoaded, passing in browser info to the children
+    rootRunner.register({ browser });
+  };
+
+  document.addEventListener('DOMContentLoaded', init);
+})();
+</code></pre>
+<p>This structure allows to easily swap in a single-page AJAX library, such as <a href="https://swup.js.org/">Swup</a>, and make sure that no stray event listeners and such are still in place when transitioning between pages.</p>
+<pre class="prettyprint source lang-js"><code>import { combineRoot } from '@mashvp/marathon';
+import Swup from 'swup';
+import Bowser from 'bowser';
+
+import SomeRunner from './runners/some-runner';
+import OtherRunner from './runners/other-runner';
+import MobileRunners from './runners/mobile';
+
+(() => {
+  const swup = new Swup(/* ... */);
+
+  const browser = Bowser.getParser(window.navigator.userAgent);
+  const rootRunner = combineRoot(SomeRunner, OtherRunner, MobileRunners);
+
+  const init = () => {
+    // Start the root runner on Swup contentReplaced, passing in browser info to the children
+    rootRunner.register({ browser });
+  };
+
+  const unload = () => {
+    // Stop and clear all runners before Swup page change
+    rootRunner.unregister();
+  };
+
+  swup.on('contentReplaced', init);
+  swup.on('willReplaceContent', unload);
+})();
+</code></pre>
+<h2>Builtins</h2>
+<p>Marathon provides runners with a few builtin functions, which simplify handling event listeners between <code>register</code> and <code>unregister</code> calls.</p>
+<h3>bind</h3>
+<p>This function works just like <code>addEventListener</code>, but listeners are cleared automatically when the runner unregisters.</p>
+<pre class="prettyprint source lang-js"><code>import { createRunner } from '@mashvp/marathon';
+
+export default createRunner('ExampleRunner', ({ /* globals */ }, { bind }) => {
+  const register = () => {
+    const button = document.querySelector('button.example-runner');
+
+    bind(button, 'click', () => {
+      alert('The button was clicked');
+    });
+  };
+
+  // No `unregister` is needed here since `bind` clears the event listener automatically
+  return { register };
+});
+</code></pre>
+<h3>unbind</h3>
+<p>This function works just like <code>removeEventListener</code>, but you don't need to give a reference to the original handler, since they are memorized.</p>
+<p>Please note that <code>unbind</code> will remove all event listeners of a given type on an element.</p>
+<pre class="prettyprint source lang-js"><code>unbind(element, eventType);
+</code></pre>
+<h3>unbindAll</h3>
+<p>This function will unbind all events that were bound using <code>bind</code> on a given element.</p>
+<pre class="prettyprint source lang-js"><code>unbindAll(element);
+</code></pre>
+<h2>Author</h2>
+<p>👤 <strong>Mashvp</strong></p>
+<ul>
+<li>Website: <a href="https://mashvp.com">mashvp.com</a></li>
+<li>Twitter: <a href="https://twitter.com/mashvp">@mashvp</a></li>
+<li>Github: <a href="https://github.com/mashvp">@mashvp</a></li>
+<li>LinkedIn: <a href="https://www.linkedin.com/company/mashvp/">@mashvp</a></li>
+</ul>
+<h2>Show your support</h2>
+<p>Give a ⭐️ if this project helped you!</p>
+<h2>📝 License</h2>
+<p>Copyright © 2019 <a href="https://github.com/mashvp">Mashvp</a>.<br />
+This project is <a href="LICENSE.md">MIT</a> licensed.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.3</a> on Tue Dec 24 2019 19:42:05 GMT+0100 (Central European Standard Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

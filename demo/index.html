@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Marathon -- Demo</title>
+
+  <link rel="stylesheet" href="./demo.css" id="global-styles">
+</head>
+
+<body>
+  <main>
+    <div class="line space-between">
+      <h1>Marathon Demo</h1>
+
+      <div class="line">
+        <button class="primary register">Register all</button>
+        <button class="primary unregister">Unregister all</button>
+      </div>
+    </div>
+
+    <h3>Scoped runner: Alert button</h3>
+
+    <div class="line">
+      <button class="primary alert-button" data-alert="This is the alert content">Click me</button>
+      <button class="primary alert-button" data-alert="This is another alert content">No, click me!</button>
+    </div>
+
+    <h3>Scoped runner: Echo form field</h3>
+
+    <form class="echo-field line">
+      <div class="field-group">
+        <input type="text" placeholder="Type here">
+        <div class="field-buttons">
+          <button type="submit" class="primary">Echo back to me</button>
+        </div>
+      </div>
+    </form>
+
+    <h3>Scoped runner: Image preloader</h3>
+
+    <div class="image-preloader" data-preview-src="https://picsum.photos/id/1016/53/30"
+      data-full-src="https://picsum.photos/id/1016/3840/2160"></div>
+    <div class="image-preloader" data-preview-src="https://picsum.photos/id/1031/53/30"
+      data-full-src="https://picsum.photos/id/1031/3840/2160"></div>
+
+    <h3>Component: Demo component</h3>
+    <marathon-component name="DemoComponent"></marathon-component>
+
+    <h3>Component: Counter component</h3>
+    <marathon-component name="Counter"></marathon-component>
+  </main>
+
+  <script src="./demo.js"></script>
+</body>
+
+</html>
