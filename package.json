@@ -1,5 +1,5 @@
 {
-  "name": "marathon",
+  "name": "@mashvp/marathon",
   "version": "0.1.0",
   "description": "Marathon runner system for vanilla JavaScript",
   "main": "src/index.js",
