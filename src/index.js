@@ -12,6 +12,8 @@ export * from './runners/scoped-runner';
 export * from './runners/combined-runner';
 export * from './runners/component-runner';
 
+export * from './utils';
+
 /**
  * @typedef {function(*): MarathonObject} RunnerFunction
  *
