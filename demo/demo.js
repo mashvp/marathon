@@ -3,7 +3,7 @@ import {
   combineRoot,
   combineRunners,
   createScopedRunner,
-  createComponentRunner
+  createComponentRunner,
 } from '../src';
 
 import { css, html } from '../src/utils';
@@ -50,7 +50,7 @@ const EchoField = createScopedRunner(
     const register = () => {
       const input = scope.querySelector('input');
 
-      bind(scope, 'submit', event => {
+      bind(scope, 'submit', (event) => {
         event.preventDefault();
 
         alert(`${input.value} ::: Global value: ${secretNumber}`);
@@ -81,7 +81,7 @@ const ImagePreloader = createScopedRunner(
         opacity: 1,
         duration: 0.75,
         delay: 0,
-        ...options
+        ...options,
       };
 
       element.style = css`
@@ -104,7 +104,7 @@ const ImagePreloader = createScopedRunner(
     };
 
     const register = () => {
-      [...scope.children].forEach(child => scope.removeChild(child));
+      [...scope.children].forEach((child) => scope.removeChild(child));
 
       scope.style.position = 'relative';
       scope.style.overflow = 'hidden';
@@ -133,6 +133,28 @@ const ImagePreloader = createScopedRunner(
   }
 );
 
+const MappedRunner = createScopedRunner(
+  'MappedRunner',
+  '.mapped',
+  ({ scope }) => {
+    const register = () => {
+      const values = ['One', 'Two', 'Three', 'Four', 'Five'];
+      const items = values.map((text) => html`<li>${text}</li>`.safe());
+
+      scope.insertAdjacentHTML(
+        'beforeend',
+        html`
+          <ul>
+            ${items}
+          </ul>
+        `.string
+      );
+    };
+
+    return { register };
+  }
+);
+
 const DemoComponent = createComponentRunner(
   'DemoComponent',
   (
@@ -141,7 +163,7 @@ const DemoComponent = createComponentRunner(
   ) => {
     useState('text', secretNumber);
 
-    useCallback('setText', event => {
+    useCallback('setText', (event) => {
       setState('text', event.target.value);
     });
 
@@ -233,7 +255,7 @@ const CursorComponent = createRunner('CursorComponent', ({}, { bind }) => {
 
     document.body.appendChild(cursor);
 
-    bind(document, 'mousemove', event => {
+    bind(document, 'mousemove', (event) => {
       const { clientX, clientY } = event;
 
       cursor.style.transform = `translate(${clientX}px, ${clientY}px)`;
@@ -260,7 +282,7 @@ const Counter = createComponentRunner(
   ({}, { useInterval, useState, getState, setState, useCallback }) => {
     useState('count', 0);
 
-    useCallback('reset', event => {
+    useCallback('reset', (event) => {
       event.preventDefault();
 
       setState('count', 0);
@@ -344,6 +366,7 @@ const CombinedComponents = combineRunners(
   AlertButton,
   EchoField,
   ImagePreloader,
+  MappedRunner,
   DemoComponent,
   CursorComponent,
   Counter

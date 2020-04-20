@@ -15,6 +15,8 @@
   </a>
 </p>
 
+# ⚠ THIS PACKAGE WILL NOT RECEIVE FURTHER SUPPORT ⚠
+
 > Marathon runner system for vanilla JavaScript
 
 Marathon aims to simplify web JavaScript development thanks to separation of concern and a reducer-like single entry point. This eases the development of isolated, pure components (provided they are coded this way) and enables a basic, HTTP multi-page website to be turned into a single-page application with the use of libraries such as [Swup](https://swup.js.org/), [Barba.js](https://barba.js.org/), [InstantClick](http://instantclick.io/), [Turbolinks](https://github.com/turbolinks/turbolinks) and others, with very minimal code change.

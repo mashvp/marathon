@@ -12,31 +12,35 @@ import { escape } from 'lodash';
  */
 export const marathonObject = (type, obj) => ({ __marathon: { type }, ...obj });
 
-export const isMarathonObject = obj => obj && obj.__marathon;
+export const isMarathonObject = (obj) => obj && obj.__marathon;
 
 export const isMarathonType = (obj, type) =>
   isMarathonObject(obj) && obj.__marathon.type === type;
 
 export const RunnerState = {
   UNREGISTERED: 'UNREGISTERED',
-  REGISTERED: 'REGISTERED'
+  REGISTERED: 'REGISTERED',
 };
 
-export const isNullOrUndefined = value => value == undefined;
+export const isNullOrUndefined = (value) => value == undefined;
 
-export const isString = value =>
+export const isString = (value) =>
   !isNullOrUndefined(value) &&
   value.constructor.name.toLowerCase() === 'string';
 
+export const isArray = (value) => Array.isArray(value);
+
 export const generateUUID = () =>
-  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+  'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
     const r = (Math.random() * 16) | 0;
     const v = c == 'x' ? r : (r & 0x3) | 0x8;
 
     return v.toString(16);
   });
 
-export const isTaggedStringValue = value => value && value.__taggedString;
+export const isTaggedStringValue = (value) => value && value.__taggedString;
+export const isTaggedStringArray = (value) =>
+  isArray(value) && value.every((entry) => isTaggedStringValue(entry));
 
 export const createTaggedTemplateString = (
   separator,
@@ -55,6 +59,18 @@ export const createTaggedTemplateString = (
         }
 
         return string + finalValue;
+      } else if (isTaggedStringArray(rawValue)) {
+        const taggedString = rawValue
+          .map((entry) => {
+            if (entry.escapeString) {
+              return escape(entry.string);
+            }
+
+            return entry.string;
+          })
+          .join('');
+
+        return string + taggedString;
       } else {
         const escapedValue = escapeString ? escape(rawValue) : rawValue;
 
@@ -64,8 +80,8 @@ export const createTaggedTemplateString = (
     .join('')
     .trim()
     .split('\n')
-    .map(line => line.trim())
-    .filter(line => line.length)
+    .map((line) => line.trim())
+    .filter((line) => line.length)
     .join(separator);
 
   if (tag) {
@@ -87,7 +103,7 @@ export const createTaggedTemplateString = (
         }
 
         return this.string.localeCompare(other.string) === 0;
-      }
+      },
     };
   }
 
@@ -96,7 +112,7 @@ export const createTaggedTemplateString = (
 
 export const css = createTaggedTemplateString(' ', {
   escapeString: false,
-  tag: { name: 'css', escapeString: false }
+  tag: { name: 'css', escapeString: false },
 });
 
 export const html = createTaggedTemplateString(' ', {
@@ -104,13 +120,20 @@ export const html = createTaggedTemplateString(' ', {
   tag: {
     name: 'html',
     escapeString: true,
+
+    safe() {
+      this.escapeString = false;
+
+      return this;
+    },
+
     toFragment() {
       const container = document.createElement('div');
 
       container.innerHTML = this.string;
       return container.children;
-    }
-  }
+    },
+  },
 });
 
 export const registerComponentElement = () => {
