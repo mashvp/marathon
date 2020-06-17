@@ -1,7 +1,7 @@
-import { differenceBy } from 'lodash';
+import differenceBy from 'lodash/differenceBy';
 
 import { COMPONENT_RUNNER } from '../types';
-import { marathonObject, isString, generateUUID, RunnerState } from '../utils';
+import { marathonObject, isString, RunnerState } from '../utils';
 
 import { createRunner } from './base-runner';
 
